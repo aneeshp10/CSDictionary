@@ -1,12 +1,4 @@
 
-// --== CS400 File Header Information ==--
-// Name: Aneesh Patil
-// Email: apatil6@wisc.edu
-// Team: GA
-// TA: Daniel Kiel
-// Lecturer: Gary Dahl
-// Notes to Grader: NA
-
 import java.util.LinkedList;
 
 /**
