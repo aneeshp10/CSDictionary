@@ -31,8 +31,9 @@ public class CS400Dictionary {
 			System.out.println("Press 'c' to start practice tool");
 			if (input.equals("a")) {
 				boolean retry = true;
-				System.out.println("What word do you want to search?");
-				// lookup("cs");
+				System.out.println("What word do you want to search? ");
+				String input2 = scan.nextLine();
+				lookup(input2).display();
 				while (retry) {
 
 				}
@@ -79,6 +80,10 @@ public class CS400Dictionary {
 
 	}
 
+	public String objToString(WordNode word) {
+		return word.getDefinition();
+	}
+
 	public String getAllTerms(RedBlackTree.Node<WordNode> current) {
 		String str = ""; // initialize an empty string
 		if (current == null) {
@@ -99,19 +104,18 @@ public class CS400Dictionary {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		CS400Dictionary dict = new CS400Dictionary();
-		// dict.userInterface();
-		WordNode word = new WordNode("CS", "Computer Science", "1.4");
-		WordNode word2 = new WordNode("DS", "Computer Science", "1.4");
-		WordNode word3 = new WordNode("BS", "Computer Science", "1.4");
-
-		dict.addWord(word);
-		dict.addWord(word2);
-		dict.addWord(word3);
-
-		// System.out.println(rbTree.root.leftChild.data.getWord());
-
-		WordNode obj = dict.lookup("bash");
-		System.out.println(obj.getDefinition());
+		dict.userInterface();
+		/*
+		 * WordNode word = new WordNode("CS", "Computer Science", "1.4"); WordNode word2
+		 * = new WordNode("DS", "Computer Science", "1.4"); WordNode word3 = new
+		 * WordNode("BS", "Computer Science", "1.4");
+		 * 
+		 * dict.addWord(word); dict.addWord(word2); dict.addWord(word3);
+		 * 
+		 * // System.out.println(rbTree.root.leftChild.data.getWord());
+		 * 
+		 * WordNode obj = dict.lookup("bash"); System.out.println(obj.getDefinition());
+		 */
 
 		// System.out.println(dict.getAllTerms(rbTree.root));
 	}
