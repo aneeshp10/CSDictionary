@@ -1,3 +1,10 @@
+// --== CS400 File Header Information ==--
+// Name: Aneesh Patil
+// Email: apatil6@wisc.edu
+// Team: GA
+// TA: Daniel Kiel
+// Lecturer: Gary Dahl
+// Notes to Grader: NA
 
 import java.util.LinkedList;
 
@@ -339,7 +346,9 @@ public class RedBlackTree<T extends Comparable<T>> {
 	// activity.
 
 	public static void main(String[] args) {
+
 		RedBlackTree<Integer> tree = new RedBlackTree<Integer>();
+		Node<Integer> obj = tree.root;
 		tree.insert(10);
 		tree.insert(18);
 		tree.insert(7);
@@ -352,8 +361,8 @@ public class RedBlackTree<T extends Comparable<T>> {
 		tree.insert(2);
 		tree.insert(1);
 		tree.insert(70);
-		// System.out.println(tree.toString());
-		// System.out.println(tree.root.rightChild.rightChild.rightChild.rightChild.isBlack);
+		System.out.println(tree.toString());
+		System.out.println(tree.root.rightChild.rightChild.rightChild.rightChild.isBlack);
 
 	}
 }
