@@ -10,7 +10,7 @@ public class CS400Dictionary {
 	private Scanner scan;
 	private HashMap<String, String> wordsDefine;
 	private boolean running = true;
-	private int size;
+	protected int size;
 
 	public CS400Dictionary() throws FileNotFoundException {
 		loader = new LoadFile(new File("define.txt"));
@@ -56,6 +56,7 @@ public class CS400Dictionary {
 		}
 
 		rbTree.insert(new WordNode(newWord.getWord(), newWord.getDefinition(), newWord.getModule()));
+		size++;
 	}
 
 	public WordNode lookup(String findWord) {
@@ -77,11 +78,35 @@ public class CS400Dictionary {
 		}
 
 		throw new NoSuchElementException("This term does not exist");
-
 	}
 
-	public String objToString(WordNode word) {
-		return word.getDefinition();
+	public String quizInterface(RedBlackTree.Node<WordNode> current) {
+		System.out.println("Press any key to start, press 'q' to exit");
+		String userIn = scan.next();
+		boolean run = true;
+
+		if (userIn.equalsIgnoreCase("q")) {
+			run = false;
+		}
+
+		while (run) {
+			String str = ""; // initialize an empty string
+			if (current == null) {
+				return ""; // return empty string if tree is empty
+			}
+
+			else {
+				// perform in-order traversal starting at root
+				str += getAllTerms(current.leftChild); // recursive call descends into left subtree
+				str += (current.data.getWord() + ": " + current.data.getDefinition() + " " + "("
+						+ current.data.getModule() + ")" + "\n"); // current is printed in
+				// the given form once
+				// left is done
+				str += getAllTerms(current.rightChild); // recursively descend into right tree
+			}
+			// return final string
+		}
+		return "";
 	}
 
 	public String getAllTerms(RedBlackTree.Node<WordNode> current) {
@@ -104,7 +129,9 @@ public class CS400Dictionary {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		CS400Dictionary dict = new CS400Dictionary();
-		dict.userInterface();
+		System.out.println(dict.size);
+		// dict.userInterface();
+		dict.quizInterface(rbTree.root);
 		/*
 		 * WordNode word = new WordNode("CS", "Computer Science", "1.4"); WordNode word2
 		 * = new WordNode("DS", "Computer Science", "1.4"); WordNode word3 = new
