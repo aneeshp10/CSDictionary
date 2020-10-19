@@ -17,6 +17,18 @@ public class CS400Dictionary {
 	private boolean running = true;
 	protected int size;
 
+	static int allowedWidth = "***********************************************************************************"
+			.length();
+	static String welcomeHeader = "***********************************************************************************\n"
+			+ "\n" + "***************************    WELCOME TO DICTIONARY    ***************************\n" + "\n"
+			+ "***********************************************************************************";
+	static String welcomeMessage = "Welcome to this interactive dictionary, study tool made to help you learn new words\n"
+			+ "and their meanings. Let's begin!";
+	static String actionPrompt = "Would you like to:\n" + "  Add a new term               (Press 'a')\n"
+			+ "  Get an existing term         (Press 'g')\n" + "  Display all terms            (Press 'd')\n"
+			+ "  Quiz yourself on the terms   (Press 'q'}\n" + "  Or exit the dictionary?      (Press 'e')\n";
+	static String userInput;
+
 	public CS400Dictionary() throws FileNotFoundException {
 		loader = new LoadFile(new File("define.txt"));
 		rbTree = new RedBlackTree<WordNode>();
@@ -26,28 +38,16 @@ public class CS400Dictionary {
 	}
 
 	public void userInterface() {
-		System.out.println("Welcome to the CS400 Dictionary. Press the enter key to begin.");
-		while (running) {
-			String input = scan.nextLine();
-			System.out.println("*********************Menu*******************************");
-			System.out.println("Press 'a' to lookup a word");
-			System.out.println("Press 'b' to list all words and definitions");
-			System.out.println("Press 'c' to start practice tool");
-			System.out.println("Press 'd' to add a new term and definition to the dictionary");
-			System.out.println("Press 'q' to exit");
-			if (input.equals("a")) {
-				boolean retry = true;
-				System.out.println("What word do you want to search? ");
-				String input2 = scan.nextLine();
-				lookup(input2).display();
-				while (retry) {
+		System.out.println(welcomeHeader + "\n");
+		System.out.println(welcomeMessage + "\n");
 
-				}
-			} else if (input.equals("b")) {
-				getAllTerms(rbTree.root);
-			} else if (input.equals("c")) {
-				quizInterface(rbTree.root);
-			} else if (input.equals("d")) {
+		userInput = "";
+		while (!userInput.equals("e")) {
+			System.out.println(actionPrompt);
+			userInput = scan.nextLine().trim().toLowerCase();
+
+			switch (userInput) {
+			case "a":
 				System.out.println("Enter the new word/term you want to add in your dictionary");
 				String in = scan.nextLine();
 				System.out.println("Enter the definition for the word: ");
@@ -55,12 +55,54 @@ public class CS400Dictionary {
 				System.out.println("Lastly, the module/week the concept was introduced in lecture: ");
 				String mod = scan.nextLine();
 				addWord(new WordNode(in, def, mod));
-			}
-			else if (input.equals("q")) {
+				break;
+
+			case "g":
+				System.out.println("Enter a word you want to look up: ");
+				String userIn = scan.nextLine();
+				System.out.println("Fetching definition of \"" + lookup(userIn).getWord() + "\"");
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				System.out.println(
+						"Definition of \"" + lookup(userIn).getWord() + "\": " + lookup(userIn).getDefinition() + "\n");
+				break;
+
+			case "d":
+				System.out.println("Fetching all words and definitions ...");
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				System.out.println(getAllTerms(rbTree.root));
+				break;
+
+			case "q":
+				System.out.println("Entering CS400 Quiz Interface ...");
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				quizInterface(rbTree.root);
+				break;
+
+			case "e":
 				exitInterface();
 				break;
+
+			default:
+				System.out.println("Input not recognized, please try again\n");
+				break;
 			}
+
 		}
+
 	}
 
 	/*
@@ -159,7 +201,7 @@ public class CS400Dictionary {
 			// left is done
 			str += getAllTerms(current.rightChild); // recursively descend into right tree
 		}
-		return str; // return final string
+		return resize(str); // return final string
 	}
 
 	public void exitInterface() {
@@ -169,7 +211,7 @@ public class CS400Dictionary {
 
 			try {
 				Thread.sleep(750);
-				System.out.println(". ");
+				System.out.print(". ");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -239,11 +281,37 @@ public class CS400Dictionary {
 
 	}
 
+	/**
+	 * This method resizes long definitions/phrases so that they are the same width
+	 * as the screen
+	 * 
+	 * @param inputPhrase the definition that needs to be fitted to the screen width
+	 * @author Jacob
+	 */
+	private static String resize(String inputPhrase) {
+		String fittedSubstring;
+		String remainingSubstring;
+		// boolean leadingSpace = false;
+
+		if (inputPhrase.length() > 83) {
+			if (inputPhrase.charAt(83) == ' ') {
+				fittedSubstring = inputPhrase.substring(0, 83) + "\n";
+				remainingSubstring = inputPhrase.substring(83, inputPhrase.length());
+			} else {
+				fittedSubstring = inputPhrase.substring(0, 83 - 1) + "-\n";
+				remainingSubstring = inputPhrase.substring(83 - 1, inputPhrase.length());
+			}
+			return fittedSubstring + resize(remainingSubstring);
+		}
+
+		return inputPhrase;
+	}
+
 	public static void main(String[] args) throws FileNotFoundException {
 		CS400Dictionary dict = new CS400Dictionary();
-		//System.out.println(dict.size);
+		// System.out.println(dict.size);
 		dict.userInterface();
-		//dict.quizInterface(rbTree.root);
+		// dict.quizInterface(rbTree.root);
 //		System.out.println("PRE******************************");
 //		dict.preOrder(rbTree.root);
 //		System.out.println("IN******************************");
@@ -251,6 +319,8 @@ public class CS400Dictionary {
 //		System.out.println("POST******************************");
 //		dict.postOrder(rbTree.root);
 
+		// dict.getAllTerms(rbTree.root);
+		// System.out.println(dict.getAllTerms(rbTree.root));
 		/*
 		 * WordNode word = new WordNode("CS", "Computer Science", "1.4"); WordNode word2
 		 * = new WordNode("DS", "Computer Science", "1.4"); WordNode word3 = new
