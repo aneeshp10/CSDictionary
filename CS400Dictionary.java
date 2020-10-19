@@ -1,21 +1,24 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-//import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Random;
+
+/*
+ * Models a CS400 terms and definitions dictionary
+ * 
+ * @author aneesh
+ */
 
 public class CS400Dictionary {
 	private LoadFile loader;
 	private static RedBlackTree<WordNode> rbTree;
 	private Scanner scan;
-	// private HashMap<String, String> wordsDefine;
 	private boolean running = true;
 	protected int size;
 
 	public CS400Dictionary() throws FileNotFoundException {
 		loader = new LoadFile(new File("define.txt"));
-		// wordsDefine = new HashMap<String, String>();
 		rbTree = new RedBlackTree<WordNode>();
 		loader.loadData(rbTree);
 		scan = new Scanner(System.in);
@@ -26,10 +29,12 @@ public class CS400Dictionary {
 		System.out.println("Welcome to the CS400 Dictionary. Press the enter key to begin.");
 		while (running) {
 			String input = scan.nextLine();
-			System.out.println("Menu");
+			System.out.println("*********************Menu*******************************");
 			System.out.println("Press 'a' to lookup a word");
 			System.out.println("Press 'b' to list all words and definitions");
 			System.out.println("Press 'c' to start practice tool");
+			System.out.println("Press 'd' to add a new term and definition to the dictionary");
+			System.out.println("Press 'q' to exit");
 			if (input.equals("a")) {
 				boolean retry = true;
 				System.out.println("What word do you want to search? ");
@@ -39,7 +44,21 @@ public class CS400Dictionary {
 
 				}
 			} else if (input.equals("b")) {
-				// System.out.println(rbt.toString());
+				getAllTerms(rbTree.root);
+			} else if (input.equals("c")) {
+				quizInterface(rbTree.root);
+			} else if (input.equals("d")) {
+				System.out.println("Enter the new word/term you want to add in your dictionary");
+				String in = scan.nextLine();
+				System.out.println("Enter the definition for the word: ");
+				String def = scan.nextLine();
+				System.out.println("Lastly, the module/week the concept was introduced in lecture: ");
+				String mod = scan.nextLine();
+				addWord(new WordNode(in, def, mod));
+			}
+			else if (input.equals("q")) {
+				exitInterface();
+				break;
 			}
 		}
 	}
@@ -47,8 +66,11 @@ public class CS400Dictionary {
 	/*
 	 * Adds a new term to the dictionary (RBTree)
 	 * 
+	 * 
 	 * @param newWord: user-defined object consisting of term, definition, module
 	 * number
+	 * 
+	 * @author aneesh
 	 */
 	public void addWord(WordNode newWord) {
 
@@ -140,6 +162,20 @@ public class CS400Dictionary {
 		return str; // return final string
 	}
 
+	public void exitInterface() {
+		System.out.println("Exiting Dictionary");
+
+		for (int i = 0; i < 3; i++) {
+
+			try {
+				Thread.sleep(750);
+				System.out.println(". ");
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private void inOrder(RedBlackTree.Node<WordNode> node) {
 		if (node == null) {
 			return;
@@ -205,9 +241,9 @@ public class CS400Dictionary {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		CS400Dictionary dict = new CS400Dictionary();
-		// System.out.println(dict.size);
-		// dict.userInterface();
-		dict.quizInterface(rbTree.root);
+		//System.out.println(dict.size);
+		dict.userInterface();
+		//dict.quizInterface(rbTree.root);
 //		System.out.println("PRE******************************");
 //		dict.preOrder(rbTree.root);
 //		System.out.println("IN******************************");
