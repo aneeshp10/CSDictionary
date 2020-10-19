@@ -81,6 +81,10 @@ public class CS400Dictionary {
 	}
 
 	public String quizInterface(RedBlackTree.Node<WordNode> current) {
+		System.out.println(
+				"****************************Welcome to the CS400 Quiz!*************************************************************");
+		System.out.println(
+				"***************Assess yourself on important CS400 definitions to help you revise on exams and concepts!*************");
 		System.out.println("Press any key to start, press 'q' to exit");
 		String userIn = scan.next();
 		boolean run = true;
@@ -90,22 +94,26 @@ public class CS400Dictionary {
 		}
 
 		while (run) {
-			String str = ""; // initialize an empty string
-			if (current == null) {
-				return ""; // return empty string if tree is empty
+
+			boolean gotInput = false;
+			// String str = ""; // initialize an empty string
+			
+			
+			inOrder(rbTree.root);
+			run = false;
+
+			System.out.println("Press any key to go over the terms again, press 'q' to quit");
+			String str = scan.next();
+			//System.out.println("THe word: " + str);
+			if (!str.equalsIgnoreCase("q")) {
+				run = true;
 			}
 
-			else {
-				// perform in-order traversal starting at root
-				str += getAllTerms(current.leftChild); // recursive call descends into left subtree
-				str += (current.data.getWord() + ": " + current.data.getDefinition() + " " + "("
-						+ current.data.getModule() + ")" + "\n"); // current is printed in
-				// the given form once
-				// left is done
-				str += getAllTerms(current.rightChild); // recursively descend into right tree
-			}
-			// return final string
 		}
+
+		System.out.println("");
+		System.out.println("Thank you for using the CS 400 Quiz! How many did you get right?");
+
 		return "";
 	}
 
@@ -127,11 +135,35 @@ public class CS400Dictionary {
 		return str; // return final string
 	}
 
+	private void inOrder(RedBlackTree.Node<WordNode> node) {
+		if (node == null) {
+			return;
+		}
+
+		inOrder(node.leftChild);
+		System.out.println("Define: " + node.data.getWord());
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Answer: " + node.data.getDefinition() + "\n");
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		inOrder(node.rightChild);
+	}
+
 	public static void main(String[] args) throws FileNotFoundException {
 		CS400Dictionary dict = new CS400Dictionary();
-		System.out.println(dict.size);
+		// System.out.println(dict.size);
 		// dict.userInterface();
 		dict.quizInterface(rbTree.root);
+
+		// dict.inOrder(rbTree.root);
+
 		/*
 		 * WordNode word = new WordNode("CS", "Computer Science", "1.4"); WordNode word2
 		 * = new WordNode("DS", "Computer Science", "1.4"); WordNode word3 = new
