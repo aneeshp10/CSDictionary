@@ -1,20 +1,21 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.Random;
 
 public class CS400Dictionary {
 	private LoadFile loader;
 	private static RedBlackTree<WordNode> rbTree;
 	private Scanner scan;
-	private HashMap<String, String> wordsDefine;
+	// private HashMap<String, String> wordsDefine;
 	private boolean running = true;
 	protected int size;
 
 	public CS400Dictionary() throws FileNotFoundException {
 		loader = new LoadFile(new File("define.txt"));
-		wordsDefine = new HashMap<String, String>();
+		// wordsDefine = new HashMap<String, String>();
 		rbTree = new RedBlackTree<WordNode>();
 		loader.loadData(rbTree);
 		scan = new Scanner(System.in);
@@ -94,17 +95,21 @@ public class CS400Dictionary {
 		}
 
 		while (run) {
+			Random rand = new Random();
+			int randNum = rand.nextInt(3);
+			if (randNum == 0) {
+				preOrder(current);
+			} else if (randNum == 1) {
+				inOrder(current);
+			} else {
+				postOrder(current);
+			}
 
-			boolean gotInput = false;
-			// String str = ""; // initialize an empty string
-			
-			
-			inOrder(rbTree.root);
 			run = false;
 
 			System.out.println("Press any key to go over the terms again, press 'q' to quit");
 			String str = scan.next();
-			//System.out.println("THe word: " + str);
+			// System.out.println("THe word: " + str);
 			if (!str.equalsIgnoreCase("q")) {
 				run = true;
 			}
@@ -156,13 +161,59 @@ public class CS400Dictionary {
 		inOrder(node.rightChild);
 	}
 
+	private void postOrder(RedBlackTree.Node<WordNode> node) {
+		if (node != null) {
+			postOrder(node.leftChild);
+			postOrder(node.rightChild);
+			System.out.println(node.data.getWord());
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println(node.data.getDefinition() + "\n");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	private void preOrder(RedBlackTree.Node<WordNode> node) {
+		if (node == null) {
+			return;
+		}
+
+		System.out.println(node.data.getWord());
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println(node.data.getDefinition() + "\n");
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		preOrder(node.leftChild);
+		preOrder(node.rightChild);
+
+	}
+
 	public static void main(String[] args) throws FileNotFoundException {
 		CS400Dictionary dict = new CS400Dictionary();
 		// System.out.println(dict.size);
 		// dict.userInterface();
 		dict.quizInterface(rbTree.root);
-
-		// dict.inOrder(rbTree.root);
+//		System.out.println("PRE******************************");
+//		dict.preOrder(rbTree.root);
+//		System.out.println("IN******************************");
+//		dict.inOrder(rbTree.root);
+//		System.out.println("POST******************************");
+//		dict.postOrder(rbTree.root);
 
 		/*
 		 * WordNode word = new WordNode("CS", "Computer Science", "1.4"); WordNode word2
