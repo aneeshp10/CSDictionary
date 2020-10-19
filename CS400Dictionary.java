@@ -1,5 +1,9 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Random;
@@ -55,6 +59,7 @@ public class CS400Dictionary {
 				System.out.println("Lastly, the module/week the concept was introduced in lecture: ");
 				String mod = scan.nextLine();
 				addWord(new WordNode(in, def, mod));
+				System.out.println("Successfully added " + in + " to the dictionary!");
 				break;
 
 			case "g":
@@ -62,7 +67,7 @@ public class CS400Dictionary {
 				String userIn = scan.nextLine();
 				System.out.println("Fetching definition of \"" + lookup(userIn).getWord() + "\"");
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -74,7 +79,7 @@ public class CS400Dictionary {
 			case "d":
 				System.out.println("Fetching all words and definitions ...");
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -122,6 +127,17 @@ public class CS400Dictionary {
 
 		rbTree.insert(new WordNode(newWord.getWord(), newWord.getDefinition(), newWord.getModule()));
 		size++;
+		try (FileWriter f = new FileWriter("define.txt", true);
+				BufferedWriter b = new BufferedWriter(f);
+				PrintWriter p = new PrintWriter(b);) {
+			p.println("Word: " + newWord.getWord());
+			p.println("Define: " + newWord.getDefinition());
+			p.println("Module: " + newWord.getModule());
+			p.println("stop: ");
+		} catch (IOException i) {
+			i.printStackTrace();
+		}
+
 	}
 
 	public WordNode lookup(String findWord) {
@@ -146,10 +162,9 @@ public class CS400Dictionary {
 	}
 
 	public String quizInterface(RedBlackTree.Node<WordNode> current) {
-		System.out.println(
-				"****************************Welcome to the CS400 Quiz!*************************************************************");
-		System.out.println(
-				"***************Assess yourself on important CS400 definitions to help you revise on exams and concepts!*************");
+		System.out.println("****************************Welcome to the CS400 Quiz!*****************************");
+		System.out
+				.println("****Assess yourself on important CS400 definitions to help you revise on exams!****" + "\n");
 		System.out.println("Press any key to start, press 'q' to exit");
 		String userIn = scan.next();
 		boolean run = true;
@@ -201,7 +216,7 @@ public class CS400Dictionary {
 			// left is done
 			str += getAllTerms(current.rightChild); // recursively descend into right tree
 		}
-		return resize(str); // return final string
+		return str; // return final string
 	}
 
 	public void exitInterface() {
@@ -335,4 +350,5 @@ public class CS400Dictionary {
 
 		// System.out.println(dict.getAllTerms(rbTree.root));
 	}
+
 }
