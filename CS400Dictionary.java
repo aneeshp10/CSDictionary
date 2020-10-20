@@ -1,12 +1,3 @@
-// --== CS400 File Header Information ==--
-// Name: Aneesh Patil
-// Email: apatil6@wisc.edu
-// Team: GA
-// Role: Back End
-// TA: Daniel Kiel
-// Lecturer: Gary Dahl
-// Notes to Grader: N/A
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.NoSuchElementException;
@@ -114,9 +105,10 @@ public class CS400Dictionary extends RedBlackTree<WordNode> {
 	public void quizHelper() {
 
 		System.out.println("NOTE: this quiz has " + loader.size + " terms. You will have 10 seconds "
-				+ "to come up with each definition before the answer is displayed."); // print welcome message and
-																						// number of words in the
-																						// dictionary
+				+ "to come up with each definition before the answer is displayed."); // print welcome
+																						// message and
+		// number of words in the
+		// dictionary
 		System.out.println("Press any key to start the quiz. If you want to return to main menu, press 'e'");
 
 		// checks user input, if 'e' exit to main menu
@@ -157,8 +149,9 @@ public class CS400Dictionary extends RedBlackTree<WordNode> {
 
 			// while run is true, continue the quiz
 			while (run) {
-				Random rand = new Random(); // use random number generator to shuffle the quiz order to help revision be
-											// more comprehensive and less monotonous
+				Random rand = new Random(); // use random number generator to shuffle the quiz order to help
+											// revision be
+				// more comprehensive and less monotonous
 				int randNum = rand.nextInt(3);
 				// if 0, preOrder. if 1, inOrder. if 2, postOrder
 				if (randNum == 0) {
@@ -413,8 +406,9 @@ public class CS400Dictionary extends RedBlackTree<WordNode> {
 			String term;
 			System.out.println("Enter the term you would like to lookup:");
 			term = scan.nextLine().trim().toLowerCase();
-			System.out.println("Definition: " + getDef(term)); // print definition, if word does not exist throw
-																// NoSuchElementException and enter catch block
+			System.out.println("Definition: " + getDef(term)); // print definition, if word does not exist
+																// throw
+			// NoSuchElementException and enter catch block
 
 			System.out.println(
 					"Enter 'e' if you would like to exit to the main menu or press any other key to lookup another term: ");
@@ -500,10 +494,10 @@ public class CS400Dictionary extends RedBlackTree<WordNode> {
 
 		WordNode data;
 		System.out.println("Enter the term you would like to add: ");
-		term = scan.nextLine(); // check user input, print error message if entry already exists
+		term = scan.nextLine();
 		if (checkTerm(term)) {
 			System.out.println("\nWARNING: term already exists in the dictionary.");
-			boolean input = true; // boolean flag to control function flow (while loop)
+			boolean input = true;
 			while (input) {
 				System.out.println("Enter 'e' to return to the main menu");
 				if (scan.nextLine().trim().toLowerCase().equals("e")) {
@@ -525,27 +519,26 @@ public class CS400Dictionary extends RedBlackTree<WordNode> {
 			return;
 		}
 		System.out.println("Enter the definition of the term:");
-		definition = scan.nextLine(); // store user input for definition
+		definition = scan.nextLine();
 		System.out.println("Enter the module it is from:");
-		module = scan.nextLine(); // store user input for module
+		module = scan.nextLine();
 
-		data = new WordNode(term, definition, module); // store the new WordNode in variable 'data'
-		rbt.insert(data); // insert into the tree
-		loader.size++; // increment the size of the dictionary
-		System.out.println("Saving new term to dictionary..."); // UI
-		loader.saveData(rbt); // call saveData to append to database (txt file)
-		System.out.println("New term successfully added."); // print success message
+		data = new WordNode(term, definition, module);
+		rbt.insert(data);
+		loader.size++;
+		System.out.println("Saving new term to dictionary...");
+		loader.saveData(rbt);
+		System.out.println("New term successfully added.");
 		System.out.println();
 
 		System.out.println(
 				"Enter 'e' if you would like to exit to the main menu or enter any other value to add another term: ");
 
-		// check userinput - if 'e', exit the function else contine the same
 		userInput = scan.nextLine();
 		if (userInput.trim().toLowerCase().equals("e"))
 			return;
 		else
-			addTermHelper(); // self method call
+			addTermHelper();
 	}
 
 	/**
@@ -559,7 +552,6 @@ public class CS400Dictionary extends RedBlackTree<WordNode> {
 		Node<WordNode> curr = rbt.root;
 		boolean returnBoo = false;
 
-		// check if the WordNode node is not null
 		while (curr != null) {
 
 			if (curr.data.getWord().equalsIgnoreCase(term)) {
