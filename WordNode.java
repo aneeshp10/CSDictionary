@@ -1,60 +1,112 @@
-/*
- * This class records a Word Node for a Red-Black Tree
+
+/**
+ * This class models a WordNode consisting of a term, definition, and module in
+ * a Red Black Tree
+ *
+ * @author aneesh
  */
 
 public class WordNode implements Comparable<WordNode> {
 
-	private String word;
-	private String definition;
-	private String module;
+	private String word; // data field which represents a word within WordNode.
+	private String definition; // data field which represents a definition within WordNode.
+	private String module; // data field which represents a module within WordNode.
 
+	/**
+	 * Creates a new WordNode with given data
+	 * 
+	 * @param word       reference to the term in the WordNode
+	 * @param definition reference to the definition in the WordNode
+	 * @param module     reference to the module in the WordNode
+	 * 
+	 * @author aneesh
+	 */
 	public WordNode(String word, String definition, String module) {
 		this.word = word;
 		this.definition = definition;
 		this.module = module;
 	}
 
+	/**
+	 * Gets the term related to the WordNode
+	 * 
+	 * @return term from CS dictionary
+	 * 
+	 * @author aneesh
+	 */
 	public String getWord() {
 		return word;
 	}
 
+	/**
+	 * Sets word in the WordNode
+	 * 
+	 * @param word the term to set
+	 * 
+	 * @author aneesh
+	 * 
+	 */
 	public void setWord(String word) {
 		this.word = word;
 	}
 
+	/**
+	 * Gets the definition of a specific WordNode
+	 * 
+	 * @return definition of type string
+	 * 
+	 * @author aneesh
+	 */
 	public String getDefinition() {
 		return definition;
 	}
 
+	/**
+	 * Sets definition in the WordNode
+	 * 
+	 * @param definition the defintition to set
+	 * 
+	 * @author aneesh
+	 */
 	public void setDefinition(String definition) {
 		this.definition = definition;
 	}
 
+	/**
+	 * Gets the module from the WordNode
+	 * 
+	 * @return the module in String type
+	 * 
+	 * @author aneesh
+	 */
 	public String getModule() {
 		return module;
 	}
 
+	/**
+	 * Sets module in the WordNode
+	 * 
+	 * @param module the module to set
+	 * 
+	 * @author aneesh
+	 */
 	public void setModule(String module) {
 		this.module = module;
 	}
 
+	/**
+	 * Compares two WordNodes based on lexicographical form of the word
+	 * 
+	 * @returns the value 0 if the argument o is the same as this WordNode; a value
+	 *          less than 0 if this patient is lexicographically lower in value;
+	 *          value greater than 0 otherwise.
+	 * @throws NullPointerException if o is null
+	 * 
+	 * @author aneesh
+	 */
 	@Override
 	public int compareTo(WordNode o) {
 		// TODO Auto-generated method stub
 		return (this.word.compareTo(o.word));
 	}
-
-	public void display() {
-		System.out.println(getWord() + ": " + getDefinition());
-	}
-
-	public static void main(String[] args) {
-		//WordNode x = new WordNode("hii", "its me");
-		//WordNode x2 = new WordNode("hi", "its me again");
-		//System.out.println(x.compareTo(x2));
-		RedBlackTree<WordNode> obj = new RedBlackTree<WordNode>();
-		//Node<WordNode> obj2 = obj.root;
-		System.out.println(obj.root.data);
-	}
-
 }
