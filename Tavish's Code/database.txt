@@ -1,0 +1,51 @@
+Word: load factor
+Define: a measure that decides when to increase the HashMap capacity to maintain the get() and put() operation complexity of O(1).
+Module: Module 2 
+stop: 
+
+Word: cs
+Define: computer science
+Module: Module 1 
+stop: 
+
+Word: ssh
+Define: a cryptographic network protocol for operating network services securely over an unsecured network. Typical applications include remote command-line, login, and remote command execution
+Module: Module 2 
+stop: 
+
+Word: bash
+Define: a Unix shell and command language
+Module: Module 1 
+stop: 
+
+Word: hash function
+Define: a way to create a compact representation of an arbitrarily large amount of data
+Module: Module 1 
+stop: 
+
+Word: make
+Define: a build automation tool that automatically builds executable programs and libraries from source code by reading files called Makefiles which specify how to derive the target program.
+Module: Module 3 
+stop: 
+
+Word: vim
+Define: a unix text editor
+Module: Module 2 
+stop: 
+
+Word: binary search tree
+Define: a type of binary tree. It can also be defined as a node-based binary tree. In BST, all the nodes in the left subtree have values that are less than the value of the root node
+Module: Module 3 
+stop: 
+
+Word: emacs
+Define: a text editor available on Linux, described as "the extensible, customizable, self-documenting, real-time display editor"
+Module: Module 3 
+stop: 
+
+Word: junit
+Define: a unit testing framework for the Java programming language.
+Module: Module 3 
+stop: 
+
+end:
