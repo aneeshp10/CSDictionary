@@ -1,3 +1,4 @@
+
 // --== CS400 File Header Information ==--
 // Name: Arjun Iyer
 // Email: iyer9@wisc.edu
@@ -13,8 +14,9 @@ import java.util.Random;
 import java.util.Scanner;
 
 /**
- * The main class that runs the User Interface for the CS400 Dictionary application
- *
+ * The main class that runs the User Interface for the CS400 Dictionary
+ * application
+ * 
  * @author Arjun Iyer
  *
  */
@@ -45,6 +47,8 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 	}
 
 	/**
+	 * UI that runs the main menu of the program. Runs until the user decides to exit.
+	 * 
 	 * @author Arjun Iyer
 	 */
 	public void userMenu() {
@@ -55,7 +59,6 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 		while (running) {
 
 			userInput = "";
-			scan = new Scanner(System.in);
 
 			System.out.println();
 			System.out.println(actionPrompt);
@@ -100,8 +103,6 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 	 */
 	private void quizHelper() {
 
-		scan = new Scanner(System.in);
-
 		boolean run = true;
 		Node<WordNode> current = rbt.root;
 
@@ -119,12 +120,14 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 			run = false;
 
 			System.out.println("No more terms left. The quiz has ended");
-			System.out.println(
-					"Enter 'e' if you would like to exit to the main menu or press any other key to go over the terms again: ");
-			if (scan.nextLine().trim().toLowerCase().equals("e"))
+			if (returnToMenu(
+					"Enter 'e' if you would like to exit to the main menu or press any other key to go over the terms again: ")) {
 				return;
-			else
-				quizHelper();
+			} else {
+				System.out.println(""); // UI linespace
+				quizHelper(); // self method call
+				return;
+			}
 		}
 
 	}
@@ -262,24 +265,38 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 	 */
 	private void displayAllTermsHelper() {
 
-		System.out.println(getAllTerms(rbt.root));
-		if(getAllTerms(rbt.root).isBlank()) {
+		System.out.println("***********************************************************************************\n"
+				+ "\n" + "**************************    TERMS IN THE DICTIONARY    **************************\n" + "\n"
+				+ "***********************************************************************************" + "\n");
+		System.out.println(getAllTerms(rbt.root)); // printing all terms to console
+
+		if (getAllTerms(rbt.root).isBlank()) {
 			System.out.println("The dictionary is empty, please add terms using the 'Add a new term' feature.");
+			System.out.print("\nGoing back to the main menu");
+			// UI for exiting
+			try {
+				int i = 3;
+				while (i > 0) {
+					Thread.sleep(1000);
+					System.out.print(".");
+					i--;
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println(""); // UI linespace
 			return;
 		}
-		try {
-			int i = 15;
-			System.out.print("Returning to Main menu in :  ");
-			while (i >= 0) {
-				Thread.sleep(1000);
-				System.out.print(i + ".. ");
-				i--;
-			}
-			System.out.println();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+
+		if (returnToMenu(
+				"Enter 'e' if you would like to exit to the main menu or press any other key to display the terms again: ")) {
+			return;
+		} else {
+			System.out.println(""); // UI linespace
+			displayAllTermsHelper(); // rerun
+			return;
 		}
-		
+
 	}
 
 	/**
@@ -304,7 +321,7 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 		else {
 			treeString += getAllTerms(current.leftChild); // recurse on left tree
 			treeString += (current.data.getWord() + ": " + current.data.getDef() + " " + "(Module: "
-					+ current.data.getModule() + ")" + "\n"); // print values
+					+ current.data.getModule() + ")" + "\n" + "\n"); // print values
 			treeString += getAllTerms(current.rightChild); // recurse on right tree
 		}
 		return treeString;
@@ -319,25 +336,36 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 
 		try {
 			String term;
-			scan = new Scanner(System.in);
 
+			// getting term user wants to lookup
 			System.out.println("Enter the term you would like to lookup:");
-			term = scan.nextLine();
+			term = scan.nextLine().trim().toLowerCase();
 
+			// calling getDef() to get the definition
 			System.out.println(term + " : " + getDef(term));
+			System.out.println();
 
-			System.out.println(
-					"Enter 'e' if you would like to exit to the main menu or press any other key to lookup another term: ");
-			String inp = scan.next();
-			if (inp.equals("e"))
+			// check if the user would like to return to the main menu or continue with the same function
+			if (returnToMenu(
+					"Enter 'e' if you would like to exit to the main menu or press any other key to lookup another term: ")) {
 				return;
-			else
+			} else {
 				getTermDefHelper();
+				return;
+			}
 
 		} catch (NoSuchElementException e) {
+			// catch block to catch a NoSuchElementException for the case when the term does not exist in the dictionary
 			System.out.println("Term does not exist in Dictionary, please try again:");
 			System.out.println();
-			getTermDefHelper();
+			// check if the user would like to return to the main menu or continue with the same function
+			if (returnToMenu(
+					"Enter 'e' if you would like to exit to the main menu or press any other key to lookup another term: ")) {
+				return;
+			} else {
+				getTermDefHelper();
+				return;
+			}
 
 		}
 	}
@@ -393,40 +421,52 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 		String term;
 		String definition;
 		String module;
-		String userInput = "";
-		scan = new Scanner(System.in);
 
 		WordNode data;
 
 		System.out.println("Enter the term you would like to add:");
 		term = scan.nextLine();
+
+		// checks if the term already exists in the dictionary
 		if (checkTerm(term)) {
-			System.out.println("!!WARNING!!*Term already exists in the dictionary. Going back to the main menu...");
-			System.out.println();
-			return;
+			System.out.println("\nWARNING: term already exists in the dictionary.");
+
+			// checks if the user would like to return to the main menu or continue with the same function
+			if (returnToMenu("Enter 'e' to return to the main menu or enter any other value to try again: ")) {
+				return;
+			} else {
+				addTermHelper();
+				return;
+			}
+
 		}
 
+		// asks user for the new word and its definition
 		System.out.println("Enter the definition of the term:");
 		definition = scan.nextLine();
 		System.out.println("Enter the module it is from:");
 		module = scan.nextLine();
 
+		// create new WordNode
 		data = new WordNode(term, definition, module);
 		rbt.insert(data);
 
+		// save the new term to define.txt
 		System.out.println("Saving new term to dictionary...");
-		// TODO: save the new term to define.txt
+		loader.saveData(data);
 		System.out.println("New term successfully added.");
 		System.out.println();
 
-		System.out.println(
-				"Enter 'e' if you would like to exit to the main menu or enter any other value to add another term: ");
+		// checks if the user would like to return to the main menu or continue with the same function
+		if (returnToMenu(
+				"Enter 'e' if you would like to exit to the main menu or enter any other value to add another term: ")) {
 
-		userInput = scan.next();
-		if (userInput.equals("e"))
 			return;
-		else
-			addTermHelper();
+		} else {
+			System.out.println(""); // UI linespace
+			addTermHelper(); // self method call
+			return;
+		}
 
 	}
 
@@ -438,8 +478,6 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 	 */
 	public boolean checkTerm(String term) {
 
-		// String listOfTerms = rbt.toString().replace('[', ' ').replace(']', '
-		// ').replaceAll("\\s", "");
 		Node<WordNode> curr = rbt.root;
 		boolean returnBoo = false;
 
@@ -465,14 +503,47 @@ public class CS400DictionaryA extends RedBlackTree<WordNode> {
 		return returnBoo;
 	}
 
+	/**
+	 * UI to check if the user would like to return to the main menu or continue with the same function
+	 * 
+	 * @author Arjun Iyer
+	 * @param message - String that asks user for feedback
+	 * @return - boolean that indicates the user's decision
+	 */
+	private boolean returnToMenu(String message) {
+
+		System.out.println(message);
+		
+		// Receiving and processing user feedback
+		if (scan.nextLine().trim().toLowerCase().equals("e")) {
+			System.out.print("\nGoing back to the main menu");
+			// UI for exiting
+			try {
+				int i = 3;
+				while (i > 0) {
+					Thread.sleep(1000);
+					System.out.print(".");
+					i--;
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println(""); // UI linespace
+			return true;
+		}
+		return false;
+	}
+
 	public static void main(String[] args) throws FileNotFoundException {
 		CS400DictionaryA dict = new CS400DictionaryA();
 		System.out.println("***********************************************************************************\n"
-				+ "\n" + "***************************    WELCOME TO CS400 DICTIONARY    ***************************\n" + "\n"
-				+ "***********************************************************************************" + "\n");
+				+ "\n" + "***************************    WELCOME TO CS400 DICTIONARY    ***************************\n"
+				+ "\n" + "***********************************************************************************" + "\n");
 		System.out.println("Welcome to this interactive CS400 dictionary, study tool made to help you learn terms\n"
 				+ "and their definitions. Let's begin!" + "\n");
 		dict.userMenu();
-		System.out.println("Thank you for using this interactive dictionary!");
+		System.out.println("***********************************************************************************\n"
+				+ "\n" + "*******************    THANK YOU FOR USING CS400 DICTIONARY!    *******************\n" + "\n"
+				+ "***********************************************************************************" + "\n");
 	}
 }
