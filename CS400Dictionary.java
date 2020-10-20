@@ -1,331 +1,241 @@
-// --== CS400 File Header Information ==--
-// Name: <the name of the team member who wrote the code in this file>
-// Email: <the team member's @wisc.edu email address>
-// Team: <the team name: two letters>
-// Role: <the team member's role in your team>
-// TA: <name of the team's ta>
-// Lecturer: <name of the team mate's lecturer>
-// Notes to Grader: <optional extra notes>
-
-
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.NoSuchElementException;
-import java.util.Scanner;
 import java.util.Random;
+import java.util.Scanner;
 
-/*
- * Models a CS400 terms and definitions dictionary
- * 
- * @author aneesh
+/**
+ * The main class that runs the User Interface for the CS400 Dictionary
+ * application
+ *
+ * @author Aneesh, Arjun Iyer
+ *
  */
+public class CS400DictionaryFinal extends RedBlackTree<WordNode> {
 
-public class CS400Dictionary {
 	private LoadFile loader;
-	private static RedBlackTree<WordNode> rbTree;
 	private Scanner scan;
-	protected int size;
+	public RedBlackTree<WordNode> rbt;
 
-	static int allowedWidth = "***********************************************************************************"
-			.length();
-	static String welcomeHeader = "***********************************************************************************\n"
-			+ "\n" + "***************************    WELCOME TO DICTIONARY    ***************************\n" + "\n"
-			+ "***********************************************************************************";
-	static String welcomeMessage = "Welcome to this interactive dictionary, study tool made to help you learn new words\n"
-			+ "and their meanings. Let's begin!";
-	static String actionPrompt = "Would you like to:\n" + "  Add a new term               (Press 'a')\n"
-			+ "  Get an existing term         (Press 'g')\n" + "  Display all terms            (Press 'd')\n"
-			+ "  Quiz yourself on the terms   (Press 'q'}\n" + "  Or exit the dictionary?      (Press 'e')\n";
-	static String userInput;
+	static String actionPrompt = "Select one of the following actions:\n"
+			+ "  1.Add a new term                               [Enter 'a']\n"
+			+ "  2.Get an existing term's definition            [Enter 'g']\n"
+			+ "  3.Display all terms in the dictionary          [Enter 'd']\n"
+			+ "  4.Quiz yourself on the terms                   [Enter 'q']\n"
+			+ "  5.Exit the dictionary?                         [Enter 'e']";
 
-	public CS400Dictionary() throws FileNotFoundException {
-		loader = new LoadFile(new File("define.txt"));
-		rbTree = new RedBlackTree<WordNode>();
-		loader.loadData(rbTree);
+	/**
+	 * Default constructor - initializes instance variables, database (txt file)
+	 * 
+	 * @author Arjun Iyer
+	 * @throws FileNotFoundException
+	 */
+	public CS400DictionaryFinal() throws FileNotFoundException {
+
+		loader = new LoadFile(new File("CS400Dictionary.txt"));
+		rbt = new RedBlackTree<WordNode>();
+		loader.loadData(rbt);
 		scan = new Scanner(System.in);
 
 	}
 
 	/**
-	 * Models user interface for main dictionary application
+	 * Main interface for the Dictionary application
 	 * 
-	 * @throws NoSuchElementException, IllegalArgumentException
-	 * 
-	 * @author _____, aneesh
+	 * @author Arjun Iyer
 	 */
-	public void userInterface() {
-		System.out.println(welcomeHeader + "\n");
-		System.out.println(welcomeMessage + "\n");
+	public void userMenu() {
 
-		userInput = "";
-		while (!userInput.equals("e")) {
+		String userInput;
+		boolean running = true; // controls the running of the main app
+
+		// while boolean variable is true
+		while (running) {
+
+			userInput = ""; // initialize user input
+
+			System.out.println();
 			System.out.println(actionPrompt);
+			System.out.println();
+			System.out.print("--> ");
 			userInput = scan.nextLine().trim().toLowerCase();
 
+			// match user input with expected output, print message if input is invalid
 			switch (userInput) {
+
 			case "a":
-				System.out.println("Enter the new word/term you want to add in your dictionary");
-				String in = scan.nextLine();
-				System.out.println("Enter the definition for the word: ");
-				String def = scan.nextLine();
-				System.out.println("Lastly, the module/week the concept was introduced in lecture: ");
-				String mod = scan.nextLine();
-				addWord(new WordNode(in, def, mod));
-				System.out.println("\n" + "Successfully added " + "\"" + in + "\"" + " to the dictionary!" + "\n");
+				System.out.println("");
+				addTermHelper();
 				break;
 
 			case "g":
-				System.out.println("Enter a word you want to look up: ");
-				String userIn = scan.nextLine();
-				System.out.println("Fetching definition of \"" + lookup(userIn).getWord() + "\"");
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
-				System.out.println(
-						"Definition of \"" + lookup(userIn).getWord() + "\": " + lookup(userIn).getDefinition() + "\n");
+				System.out.println("");
+				getTermDefHelper();
 				break;
 
 			case "d":
-				System.out.println("Fetching all words and definitions ..." + "\n");
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
-				System.out.println(getAllTerms(rbTree.root));
+				System.out.println("");
+				displayAllTermsHelper();
 				break;
 
 			case "q":
-				System.out.println("Entering CS400 Quiz Interface ...");
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				quizInterface(rbTree.root);
+				System.out.println("");
+				quizHelper();
 				break;
 
 			case "e":
-				exitInterface();
+				System.out.println("");
+				running = false;
 				break;
 
 			default:
 				System.out.println("Input not recognized, please try again\n");
 				break;
-			}
 
-		}
-
-	}
-
-	/**
-	 * Adds a new term to the dictionary (RBTree)
-	 * 
-	 * 
-	 * @param newWord user-defined object consisting of term, definition, module
-	 *                number
-	 * @throws IllegalArgumentException if the entered object is null
-	 * 
-	 * @author aneesh
-	 */
-	public void addWord(WordNode newWord) {
-
-		// check if newWord is null, throw exception if true
-		if (newWord == null) {
-			throw new IllegalArgumentException();
-		}
-
-		// add the user-defined object 'newWord' into the RedBlackTree
-		rbTree.insert(new WordNode(newWord.getWord(), newWord.getDefinition(), newWord.getModule()));
-		size++; // ?
-
-		// block that enters the newWord's contents into the txt file holding all words,
-		// definitions, and module numbers
-		try (FileWriter f = new FileWriter("define.txt", true);
-				BufferedWriter b = new BufferedWriter(f);
-				PrintWriter p = new PrintWriter(b);) {
-			p.println("");
-			p.println("Word: " + newWord.getWord());
-			p.println("Define: " + newWord.getDefinition());
-			p.println("Module: " + newWord.getModule());
-			p.println("stop: ");
-		} catch (IOException i) {
-			i.printStackTrace();
-		}
-
-	}
-
-	/**
-	 * Invoked when user wants to search the definition of a certain word
-	 * 
-	 * 
-	 * @param findWord String user input - word that needs to be searched
-	 * @throws NoSuchElementException if the entered word does not exist in the
-	 *                                dictionary
-	 * 
-	 * @author aneesh
-	 */
-	public WordNode lookup(String findWord) {
-		WordNode word = new WordNode(findWord, " ", " ");
-		return lookupHelper(word, rbTree.root);
-
-	}
-
-	/**
-	 * Recursive helper method to lookup a definition given a reference WordNode
-	 * with the same word
-	 * 
-	 * @param word    a reference to a WorNode target we are lookup for a match in
-	 *                the RBT rooted at root.
-	 * @param current "root" of the subtree we are looking for a match to word
-	 *                within it.
-	 * @return reference to the WordNode stored stored in this RBT which matches the
-	 *         desired word.
-	 * @throws NoSuchElementException with a descriptive error message if there is
-	 *                                no term that matches the entered
-	 * 
-	 * @author aneesh
-	 * 
-	 */
-	private WordNode lookupHelper(WordNode word, RedBlackTree.Node<WordNode> root) {
-
-		// ensure root is not null to continue block
-		while (root != null) {
-
-			// check if the current node's data (WordNode) is the same as the one we're
-			// searching for
-			if (root.data.compareTo(word) == 0) {
-				return root.data;
-			}
-			// if the returned compareTo value is positive, recurse on left child
-			else if (root.data.compareTo(word) > 0) {
-				return lookupHelper(word, root.leftChild);
-			}
-			// if the returned compareTo value is negative, recurse on right child
-			else if (root.data.compareTo(word) < 0) {
-				return lookupHelper(word, root.rightChild);
 			}
 		}
-
-		// throw NoSuchElementException if found word does not exist
-		throw new NoSuchElementException("This term does not exist");
 	}
 
 	/**
 	 * Models the interface of the CS400 Dictionary Quiz
 	 * 
-	 * @param current "root" of the tree the caller method will be passing
-	 * @return
-	 * 
-	 * @author aneesh
+	 * @author aneesh, Arjun Iyer
 	 */
-	public String quizInterface(RedBlackTree.Node<WordNode> current) {
-		System.out.println("****************************Welcome to the CS400 Quiz!*****************************");
-		System.out
-				.println("****Assess yourself on important CS400 definitions to help you revise on exams!****" + "\n");
-		System.out.println("Press any key to start, press 'q' to exit");
-		String userIn = scan.next(); // storing user's input
-		boolean run = true; // boolean variable to control running of quiz interface
 
-		// if q quit the application
-		if (userIn.equalsIgnoreCase("q")) {
-			run = false;
-		}
+	public void quizHelper() {
 
-		// quiz application while loop
-		while (run) {
-			// run the quiz in a shuffled format using a random number generator - shuffle
-			// adds on to better revising and avoids monotony
-			Random rand = new Random();
-			int randNum = rand.nextInt(3); // generate a random number between 0,1,2
-			// if 0, run the quiz in preOrder traversal, if 1, run quiz in inOrder
-			// traversal, if 2, run quiz in postOrder traversal
-			if (randNum == 0) {
-				preOrder(current);
-			} else if (randNum == 1) {
-				inOrder(current);
-			} else {
-				postOrder(current);
-			}
+		System.out.println("NOTE: this quiz has " + loader.size + " terms. You will have 10 seconds "
+				+ "to come up with each definition before the answer is displayed."); // print welcome message and
+																						// number of words in the
+																						// dictionary
+		System.out.println("Press any key to start the quiz. If you want to return to main menu, press 'e'");
 
-			run = false; // set boolean var to false
-
-			System.out.println("Press any key to go over the terms again, press 'q' to quit");
-			String str = scan.next();
-			// System.out.println("THe word: " + str);
-			// check if user entered q, if true end application, else continue quiz
-			if (!str.equalsIgnoreCase("q")) {
-				run = true;
-			}
-
-		}
-
-		// exit message after end of quiz
-		System.out.println("");
-		System.out.println("Thank you for using the CS 400 Quiz! How many did you get right?");
-
-		return "";
-	}
-
-	/**
-	 * Return the whole tree (converted to a String type) traversed in an inOrder
-	 * traversal. Returned value includes word, definition, and module number
-	 * 
-	 * @param current "root" of the tree from where we'll start traversing
-	 * @return str String that contains the entire tree's values
-	 * 
-	 * @author aneesh
-	 */
-	public String getAllTerms(RedBlackTree.Node<WordNode> current) {
-		String treeString = ""; // initialize string to be returned
-
-		// check if root node is null
-		if (current == null) {
-			return ""; // return empty string if tree is empty
-		}
-
-		// traverse through the tree in an inOrder fashion
-		else {
-			treeString += getAllTerms(current.leftChild); // recurse on left tree
-			treeString += (current.data.getWord() + ": " + current.data.getDefinition() + " " + "("
-					+ current.data.getModule() + ")" + "\n"); // print values
-			treeString += getAllTerms(current.rightChild); // recurse on right tree
-		}
-		return treeString;
-	}
-
-	/**
-	 * UI to display when user exits the main dictionary application
-	 * 
-	 * @author aneesh
-	 */
-	public void exitInterface() {
-		System.out
-				.println("***********************************************************************************" + "\n");
-		System.out.print("			      Exiting Dictionary");
-
-		// UI details
-		for (int i = 0; i < 3; i++) {
-
+		// checks user input, if 'e' exit to main menu
+		if (scan.nextLine().trim().toLowerCase().equals("e")) {
+			System.out.print("\nGoing back to the main menu");
+			// UI for exiting
 			try {
-				Thread.sleep(750);
-				System.out.print(". ");
+				int i = 3;
+				while (i > 0) {
+					Thread.sleep(1000); // variable --> check
+					System.out.print(".");
+					i--;
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			System.out.println("");
+			return;
+		}
+		// enters else block if input character is not 'e'
+		else {
+			boolean run = true;
+			Node<WordNode> current = rbt.root; // start traversing by setting root node of tree
+			System.out.println("");
+			System.out.print("\nStarting the quiz");
+			// UI for running quiz
+			try {
+				int i = 3;
+				while (i > 0) {
+					Thread.sleep(1000);
+					System.out.print(".");
+					i--;
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println("");
+
+			// while run is true, continue the quiz
+			while (run) {
+				Random rand = new Random(); // use random number generator to shuffle the quiz order to help revision be
+											// more comprehensive and less monotonous
+				int randNum = rand.nextInt(3);
+				// if 0, preOrder. if 1, inOrder. if 2, postOrder
+				if (randNum == 0) {
+					preOrder(current);
+				} else if (randNum == 1) {
+					inOrder(current);
+				} else {
+					postOrder(current);
+				}
+				run = false; // set flag off
+				System.out.println("\nNo more terms left. The quiz has ended");
+				System.out.println(
+						"Enter 'e' if you would like to exit to the main menu or press any other key to go over the terms again: ");
+				// check if user would like to continue
+				if (scan.nextLine().trim().toLowerCase().equals("e")) {
+					System.out.print("\nGoing back to the main menu");
+					// UI for exiting
+					try {
+						int i = 3;
+						while (i > 0) {
+							Thread.sleep(1000);
+							System.out.print(".");
+							i--;
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					System.out.println(""); // UI linespace
+					return;
+				}
+				// rerun quiz if user wants to
+				else {
+					System.out.println(""); // UI linespace
+					quizHelper(); // self method call
+				}
+			}
+		}
+	}
+
+	/**
+	 * Recursive helper method to print variables in pre-order fashion to be used by
+	 * quiz interface
+	 * 
+	 * @param node node of the tree from where we'll start traversing
+	 * @author aneesh, Arjun Iyer
+	 */
+	private void preOrder(RedBlackTree.Node<WordNode> node) {
+		// check if node is null
+		if (node == null) {
+			return;
 		}
 
-		System.out.println("");
-		System.out
-				.println("\n" + "*************************Thanks for using CS400 Dictionary!*************************");
+		System.out.println("Define: " + node.data.getWord()); // print word
+
+		// give time for user to come up with their solution before presenting answer
+		try {
+			int i = 5;
+			System.out.print("Time Left:  ");
+			System.out.print("10.. ");
+			Thread.sleep(500); // millis variable (500 for testing)
+			while (i >= 0) {
+				Thread.sleep(100);
+				System.out.print(i + ".. ");
+				i--;
+			}
+			System.out.println(); // UI linespacing
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println(node.data.getDefinition() + "\n"); // print definition
+		// give x seconds of time before presenting new word
+		try {
+			int i = 5;
+			System.out.print("Moving to next term in:  ");
+			while (i >= 0) {
+				Thread.sleep(100); // variable time(millis)
+				System.out.print(i + ".. ");
+				i--;
+			}
+			System.out.println();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		preOrder(node.leftChild); // recurse on left tree
+		preOrder(node.rightChild); // recruse on right tree
+
 	}
 
 	/**
@@ -333,7 +243,7 @@ public class CS400Dictionary {
 	 * quiz interface
 	 * 
 	 * @param node node of the tree from where we'll start traversing *
-	 * @author aneesh
+	 * @author aneesh, Arjun Iyer
 	 */
 	private void inOrder(RedBlackTree.Node<WordNode> node) {
 		// check if node is null
@@ -341,19 +251,35 @@ public class CS400Dictionary {
 			return;
 		}
 
-		// recurse on left tree
-		inOrder(node.leftChild);
-		System.out.println("Define: " + node.data.getWord()); // print out the word
-
+		inOrder(node.leftChild); // recurse on left node
+		System.out.println("Define: " + node.data.getWord()); // print word
 		// give time for user to come up with their solution before presenting answer
 		try {
-			Thread.sleep(100); // millis value to be waited, variable
+			int i = 5;
+			System.out.print("Time Left:  ");
+			System.out.print("10.. ");
+			Thread.sleep(500);
+			while (i >= 0) {
+				Thread.sleep(100);
+				System.out.print(i + ".. ");
+				i--;
+			}
+			System.out.println();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Answer: " + node.data.getDefinition() + "\n"); // print out the definition
+		System.out.println("Answer: " + node.data.getDefinition() + "\n");
+
+		// time before presenting the next term
 		try {
-			Thread.sleep(100);
+			int i = 5;
+			System.out.print("Moving to next term in:  ");
+			while (i >= 0) {
+				Thread.sleep(100);
+				System.out.print(i + ".. ");
+				i--;
+			}
+			System.out.println();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -365,24 +291,39 @@ public class CS400Dictionary {
 	 * by quiz interface
 	 * 
 	 * @param node node of the tree from where we'll start traversing
-	 * @author aneesh
+	 * @author aneesh, Arjun Iyer
 	 */
 	private void postOrder(RedBlackTree.Node<WordNode> node) {
-		// check if node is null
+		// enter if node is not null
 		if (node != null) {
-			postOrder(node.leftChild); // recurse on left tree
-			postOrder(node.rightChild); // recurse on right tree
-			System.out.println(node.data.getWord()); // print out word
+			postOrder(node.leftChild); // recurse on left child
+			postOrder(node.rightChild); // recurse on right child
+			System.out.println("Define: " + node.data.getWord()); // print word
 
-			// give time for user to come up with their solution before presenting answer
 			try {
-				Thread.sleep(100);
+				int i = 5;
+				System.out.print("Time Left:  ");
+				System.out.print("10.. ");
+				Thread.sleep(500);
+				while (i >= 0) {
+					Thread.sleep(100);
+					System.out.print(i + ".. ");
+					i--;
+				}
+				System.out.println();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			System.out.println(node.data.getDefinition() + "\n"); // print out definition
+			System.out.println("Answer: " + node.data.getDefinition() + "\n");
 			try {
-				Thread.sleep(100);
+				int i = 5;
+				System.out.print("Moving to next term in:  ");
+				while (i >= 0) {
+					Thread.sleep(100);
+					System.out.print(i + ".. ");
+					i--;
+				}
+				System.out.println();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -391,90 +332,255 @@ public class CS400Dictionary {
 	}
 
 	/**
-	 * Recursive helper method to print variables in pre-order fashion to be used by
-	 * quiz interface
+	 * Method invoked when all terms need to be displayed
 	 * 
-	 * @param node node of the tree from where we'll start traversing
-	 * @author aneesh
+	 * @author Arjun Iyer
 	 */
-	private void preOrder(RedBlackTree.Node<WordNode> node) {
-		// check if node is null
-		if (node == null) {
+	public void displayAllTermsHelper() {
+		System.out.println("Total number of terms in this dictionary: " + loader.size + "\n");
+		System.out.println(getAllTerms(rbt.root));
+		if (getAllTerms(rbt.root).isBlank()) {
+			System.out.println("The dictionary is empty, please add terms using the 'Add a new term' feature.");
 			return;
 		}
-
-		System.out.println(node.data.getWord()); // print word
-		// give time for user to come up with their solution before presenting answer
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		boolean input = true;
+		while (input) {
+			System.out.println("Enter 'e' to return to the main menu");
+			if (scan.nextLine().trim().toLowerCase().equals("e")) {
+				System.out.print("\nGoing back to the main menu");
+				try {
+					int i = 3;
+					while (i > 0) {
+						Thread.sleep(1000);
+						System.out.print(".");
+						i--;
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println("");
+				input = false;
+			}
 		}
-		System.out.println(node.data.getDefinition() + "\n"); // print definition
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		preOrder(node.leftChild); // recurse on left tree
-		preOrder(node.rightChild); // recurse on right tree
-
 	}
 
 	/**
-	 * This method resizes long definitions/phrases so that they are the same width
-	 * as the screen
+	 * Helper method that retusns the whole tree (converted to a String type)
+	 * traversed in an inOrder traversal. Returned value includes word, definition,
+	 * and module number
 	 * 
-	 * @param inputPhrase the definition that needs to be fitted to the screen width
-	 * @author Jacob
+	 * @param current "root" of the tree from where we'll start traversing
+	 * @return str String that contains the entire tree's values
+	 * 
+	 * @author aneesh
 	 */
-	@SuppressWarnings("unused")
-	private static String resize(String inputPhrase) {
-		String fittedSubstring;
-		String remainingSubstring;
-		// boolean leadingSpace = false;
+	private String getAllTerms(RedBlackTree.Node<WordNode> current) {
 
-		if (inputPhrase.length() > 83) {
-			if (inputPhrase.charAt(83) == ' ') {
-				fittedSubstring = inputPhrase.substring(0, 83) + "\n";
-				remainingSubstring = inputPhrase.substring(83, inputPhrase.length());
-			} else {
-				fittedSubstring = inputPhrase.substring(0, 83 - 1) + "-\n";
-				remainingSubstring = inputPhrase.substring(83 - 1, inputPhrase.length());
-			}
-			return fittedSubstring + resize(remainingSubstring);
+		String treeString = ""; // initialize string to be returned
+
+		// check if root node is null
+		if (current == null) {
+			return ""; // return empty string if tree is empty
 		}
 
-		return inputPhrase;
+		// traverse through the tree in an inOrder fashion
+		else {
+			treeString += getAllTerms(current.leftChild); // recurse on left tree
+			treeString += ("Word: " + current.data.getWord() + " (" + current.data.getModule() + ")\n" + "Definition: "
+					+ current.data.getDefinition() + "\n\n"); // print values
+			treeString += getAllTerms(current.rightChild); // recurse on right tree
+		}
+		return treeString;
+	}
+
+	/**
+	 * Method to lookup a term's definition in the dictionary
+	 * 
+	 * @throws NoSuchElementException when word entered by user does not exist
+	 * @author Arjun Iyer
+	 */
+	private void getTermDefHelper() {
+		try {
+			String term;
+			System.out.println("Enter the term you would like to lookup:");
+			term = scan.nextLine().trim().toLowerCase();
+			System.out.println("Definition: " + getDef(term)); // print definition, if word does not exist throw
+																// NoSuchElementException and enter catch block
+
+			System.out.println(
+					"Enter 'e' if you would like to exit to the main menu or press any other key to lookup another term: ");
+			String inp = scan.nextLine();
+			// go back to main menu if user enters 'e'
+			if (inp.trim().toLowerCase().equals("e")) {
+				System.out.print("\nGoing back to the main menu");
+				try {
+					int i = 3;
+					while (i > 0) {
+						Thread.sleep(1000);
+						System.out.print(".");
+						i--;
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println("");
+				return;
+			} 
+			// self method call if user wants to continue
+			else {
+				getTermDefHelper();
+			}
+		} catch (NoSuchElementException e) {
+			System.out.println("Term does not exist in Dictionary, please try again:");
+			System.out.println();
+			getTermDefHelper(); // self method call to prompt a valid word
+		}
+	}
+
+	/**
+	 * Method to retrieve a definition of a term
+	 * 
+	 * @author Yuan Ling
+	 * @throws NoSuchElementException when trying to get a definition of a term that
+	 *                                doesn't exist
+	 * @return definition of the string
+	 */
+	public String getDef(String term) throws NoSuchElementException {
+
+		// if term does not exist
+		if (!this.checkTerm(term)) {
+			throw new NoSuchElementException("Term does not exist in dictionary.");
+		}
+
+		Node<WordNode> curr = rbt.root;
+		String returnDef = "";
+
+		while (curr != null) {
+
+			if (curr.data.getWord().equalsIgnoreCase(term)) {
+				returnDef = curr.data.getDefinition();
+				break;
+			}
+
+			// if current node is larger than term being searched
+			else if (curr.data.getWord().compareToIgnoreCase(term) > 0) {
+				curr = curr.leftChild;
+			}
+
+			// if current node is smaller than term being searched
+			else {
+				curr = curr.rightChild;
+			}
+
+		}
+		returnDef += "\n";
+		return returnDef;
+	}
+
+	/**
+	 * Method to add a new term to the dictionary
+	 * 
+	 * @author Yuan Ling, Arjun Iyer
+	 * @throws NullPointerException when attempting to add null references
+	 */
+	private void addTermHelper() {
+		String term;
+		String definition;
+		String module;
+		String userInput = "";
+
+		WordNode data;
+		System.out.println("Enter the term you would like to add: ");
+		term = scan.nextLine();
+		if (checkTerm(term)) {
+			System.out.println("\nWARNING: term already exists in the dictionary.");
+			boolean input = true;
+			while (input) {
+				System.out.println("Enter 'e' to return to the main menu");
+				if (scan.nextLine().trim().toLowerCase().equals("e")) {
+					System.out.print("\nGoing back to the main menu");
+					try {
+						int i = 3;
+						while (i > 0) {
+							Thread.sleep(1000);
+							System.out.print(".");
+							i--;
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					System.out.println("");
+					input = false;
+				}
+			}
+			return;
+		}
+		System.out.println("Enter the definition of the term:");
+		definition = scan.nextLine();
+		System.out.println("Enter the module it is from:");
+		module = scan.nextLine();
+
+		data = new WordNode(term, definition, module);
+		rbt.insert(data);
+		loader.size++;
+		System.out.println("Saving new term to dictionary...");
+		loader.saveData(rbt);
+		System.out.println("New term successfully added.");
+		System.out.println();
+
+		System.out.println(
+				"Enter 'e' if you would like to exit to the main menu or enter any other value to add another term: ");
+
+		userInput = scan.nextLine();
+		if (userInput.trim().toLowerCase().equals("e"))
+			return;
+		else
+			addTermHelper();
+	}
+
+	/**
+	 * Method to check if a term exists in the dictionary
+	 * 
+	 * @author Yuan Ling
+	 * @return true if term exists, false otherwise
+	 */
+	public boolean checkTerm(String term) {
+
+		Node<WordNode> curr = rbt.root;
+		boolean returnBoo = false;
+
+		while (curr != null) {
+
+			if (curr.data.getWord().equalsIgnoreCase(term)) {
+				returnBoo = true;
+				break;
+			}
+
+			// if current node is larger than term being searched
+			else if (curr.data.getWord().compareToIgnoreCase(term) > 0) {
+				curr = curr.leftChild;
+			}
+
+			// if current node is smaller than term being searched
+			else {
+				curr = curr.rightChild;
+			}
+
+		}
+
+		return returnBoo;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
-		CS400Dictionary dict = new CS400Dictionary();
-		// System.out.println(dict.size);
-		dict.userInterface();
-		// dict.quizInterface(rbTree.root);
-//		System.out.println("PRE******************************");
-//		dict.preOrder(rbTree.root);
-//		System.out.println("IN******************************");
-//		dict.inOrder(rbTree.root);
-//		System.out.println("POST******************************");
-//		dict.postOrder(rbTree.root);
-
-		// dict.getAllTerms(rbTree.root);
-		// System.out.println(dict.getAllTerms(rbTree.root));
-		/*
-		 * WordNode word = new WordNode("CS", "Computer Science", "1.4"); WordNode word2
-		 * = new WordNode("DS", "Computer Science", "1.4"); WordNode word3 = new
-		 * WordNode("BS", "Computer Science", "1.4");
-		 * 
-		 * dict.addWord(word); dict.addWord(word2); dict.addWord(word3);
-		 * 
-		 * // System.out.println(rbTree.root.leftChild.data.getWord());
-		 * 
-		 * WordNode obj = dict.lookup("bash"); System.out.println(obj.getDefinition());
-		 */
-
-		// System.out.println(dict.getAllTerms(rbTree.root));
+		CS400DictionaryFinal dict = new CS400DictionaryFinal();
+		System.out.println("***********************************************************************************\n"
+				+ "\n" + "************************    WELCOME TO CS400 DICTIONARY    ************************\n" + "\n"
+				+ "***********************************************************************************" + "\n");
+		System.out.println("Welcome to this interactive CS400 dictionary, study tool made to help you learn terms\n"
+				+ "and their definitions. Let's begin!" + "\n");
+		dict.userMenu();
+		System.out.println("***********************************************************************************\n"
+				+ "\n" + "*******************    THANK YOU FOR USING CS400 DICTIONARY!    *******************\n" + "\n"
+				+ "***********************************************************************************" + "\n");
 	}
-
 }
