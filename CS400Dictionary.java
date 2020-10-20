@@ -1,3 +1,12 @@
+// --== CS400 File Header Information ==--
+// Name: Aneesh Patil
+// Email: apatil6@wisc.edu
+// Team: GA
+// Role: Back End
+// TA: Daniel Kiel
+// Lecturer: Gary Dahl
+// Notes to Grader: N/A
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.NoSuchElementException;
@@ -11,7 +20,7 @@ import java.util.Scanner;
  * @author Aneesh, Arjun Iyer
  *
  */
-public class CS400DictionaryFinal extends RedBlackTree<WordNode> {
+public class CS400Dictionary extends RedBlackTree<WordNode> {
 
 	private LoadFile loader;
 	private Scanner scan;
@@ -30,7 +39,7 @@ public class CS400DictionaryFinal extends RedBlackTree<WordNode> {
 	 * @author Arjun Iyer
 	 * @throws FileNotFoundException
 	 */
-	public CS400DictionaryFinal() throws FileNotFoundException {
+	public CS400Dictionary() throws FileNotFoundException {
 
 		loader = new LoadFile(new File("CS400Dictionary.txt"));
 		rbt = new RedBlackTree<WordNode>();
@@ -425,7 +434,7 @@ public class CS400DictionaryFinal extends RedBlackTree<WordNode> {
 				}
 				System.out.println("");
 				return;
-			} 
+			}
 			// self method call if user wants to continue
 			else {
 				getTermDefHelper();
@@ -491,10 +500,10 @@ public class CS400DictionaryFinal extends RedBlackTree<WordNode> {
 
 		WordNode data;
 		System.out.println("Enter the term you would like to add: ");
-		term = scan.nextLine();
+		term = scan.nextLine(); // check user input, print error message if entry already exists
 		if (checkTerm(term)) {
 			System.out.println("\nWARNING: term already exists in the dictionary.");
-			boolean input = true;
+			boolean input = true; // boolean flag to control function flow (while loop)
 			while (input) {
 				System.out.println("Enter 'e' to return to the main menu");
 				if (scan.nextLine().trim().toLowerCase().equals("e")) {
@@ -516,26 +525,27 @@ public class CS400DictionaryFinal extends RedBlackTree<WordNode> {
 			return;
 		}
 		System.out.println("Enter the definition of the term:");
-		definition = scan.nextLine();
+		definition = scan.nextLine(); // store user input for definition
 		System.out.println("Enter the module it is from:");
-		module = scan.nextLine();
+		module = scan.nextLine(); // store user input for module
 
-		data = new WordNode(term, definition, module);
-		rbt.insert(data);
-		loader.size++;
-		System.out.println("Saving new term to dictionary...");
-		loader.saveData(rbt);
-		System.out.println("New term successfully added.");
+		data = new WordNode(term, definition, module); // store the new WordNode in variable 'data'
+		rbt.insert(data); // insert into the tree
+		loader.size++; // increment the size of the dictionary
+		System.out.println("Saving new term to dictionary..."); // UI
+		loader.saveData(rbt); // call saveData to append to database (txt file)
+		System.out.println("New term successfully added."); // print success message
 		System.out.println();
 
 		System.out.println(
 				"Enter 'e' if you would like to exit to the main menu or enter any other value to add another term: ");
 
+		// check userinput - if 'e', exit the function else contine the same
 		userInput = scan.nextLine();
 		if (userInput.trim().toLowerCase().equals("e"))
 			return;
 		else
-			addTermHelper();
+			addTermHelper(); // self method call
 	}
 
 	/**
@@ -549,6 +559,7 @@ public class CS400DictionaryFinal extends RedBlackTree<WordNode> {
 		Node<WordNode> curr = rbt.root;
 		boolean returnBoo = false;
 
+		// check if the WordNode node is not null
 		while (curr != null) {
 
 			if (curr.data.getWord().equalsIgnoreCase(term)) {
@@ -572,7 +583,7 @@ public class CS400DictionaryFinal extends RedBlackTree<WordNode> {
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
-		CS400DictionaryFinal dict = new CS400DictionaryFinal();
+		CS400Dictionary dict = new CS400Dictionary();
 		System.out.println("***********************************************************************************\n"
 				+ "\n" + "************************    WELCOME TO CS400 DICTIONARY    ************************\n" + "\n"
 				+ "***********************************************************************************" + "\n");
